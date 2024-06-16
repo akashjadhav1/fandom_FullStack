@@ -4,111 +4,17 @@ import heartOutline from "@/assets/heart.svg";
 import filledHeart from "@/assets/heartFill.svg";
 import { renderStars } from "@/assets/renderStar";
 import { Button } from "../ui/button";
-import axios from "axios";
-import { useEffect, useState, useCallback } from "react";
-import Cookies from "js-cookie";
 import PaginationComponent from "../Pagination";
+import useFavorites from "@/hooks/useFavorites"; // Adjust the path according to your project structure
+import { useState } from "react";
 
 const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
 
 function CardData({ trendingData, filter, searchQuery }) {
-  const [favorites, setFavorites] = useState([]);
-  const [isToggling, setIsToggling] = useState(false);
+  const { favorites, toggleFavorite } = useFavorites();
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
-  const navigate = useNavigate(); // Hook for programmatic navigation
-
-  useEffect(() => {
-    const fetchFavorites = async () => {
-      try {
-        const token = Cookies.get("authToken");
-        if (!token) {
-          throw new Error("No token found in cookies");
-        }
-
-        const response = await axios.get(
-          "https://fandom-mern.onrender.com/api/user/favorites",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        setFavorites(response.data.favorites || []); // Ensure favorites is always an array
-      } catch (error) {
-        console.error("Error fetching favorites:", error);
-      }
-    };
-
-    fetchFavorites();
-  }, []);
-
-  const toggleFavorite = useCallback(
-    async (movieId) => {
-      if (isToggling) return; // Prevent multiple rapid clicks
-
-      const token = Cookies.get("authToken");
-      if (!token) {
-        // Redirect to login if not authenticated
-        navigate("/login");
-        return;
-      }
-
-      setIsToggling(true);
-
-      const movieIdStr = movieId.toString();
-      const isFavorite = favorites.includes(movieIdStr);
-      const updatedFavorites = isFavorite
-        ? favorites.filter((id) => id !== movieIdStr)
-        : [...favorites, movieIdStr];
-
-      setFavorites(updatedFavorites);
-
-      try {
-        const url = isFavorite
-          ? "https://fandom-mern.onrender.com/api/user/favorites/remove"
-          : "https://fandom-mern.onrender.com/api/user/favorites";
-
-        const response = await axios.post(
-          url,
-          { movieId: movieIdStr },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (!response.data.success) {
-          // Revert state if request fails
-          setFavorites(
-            isFavorite
-              ? [...favorites, movieIdStr]
-              : favorites.filter((id) => id !== movieIdStr)
-          );
-          console.error(
-            `Failed to ${isFavorite ? "remove" : "add"} movie from favorites:`,
-            response.data.message
-          );
-        }
-      } catch (error) {
-        // Revert state if request fails
-        setFavorites(
-          isFavorite
-            ? [...favorites, movieIdStr]
-            : favorites.filter((id) => id !== movieIdStr)
-        );
-        console.error(
-          `Error toggling favorite status:`,
-          error.response?.data || error.message
-        );
-      } finally {
-        setIsToggling(false);
-      }
-    },
-    [favorites, isToggling, navigate]
-  );
+  const navigate = useNavigate();
 
   // Sort and filter the data
   const sortedData = trendingData.data
@@ -166,7 +72,7 @@ function CardData({ trendingData, filter, searchQuery }) {
                 }
                 alt="heart"
                 className="absolute top-2 right-2 lg:w-7 md:w-6 w-5 cursor-pointer"
-                onClick={() => toggleFavorite(item.id)}
+                onClick={() => toggleFavorite(item.id, navigate)}
               />
             </CardHeader>
             <hr />
