@@ -52,7 +52,7 @@ const AddTrendingMoviesAndTv = async (req, res) => {
     }
 };
 
-// Delete a trending movie or TV show by ID
+// Delete a trending movie or TV show by ID.
 const deleteData = async (req, res) => {
     try {
         // Extract the ID from the request parameters
@@ -77,16 +77,24 @@ const deleteData = async (req, res) => {
 // Retrieve all trending movies and TV shows
 const getTrendingData = async (req, res) => {
     try {
-        // Find all entries in the TrendingData collection
-        const allEntries = await TrendingData.find();
+        // Get page and limit query parameters from the request (defaults: page 1, limit 10)
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
 
-        // Send a success response with all the entries
-        return res.status(200).send({ data: allEntries });
+        // Find all entries with pagination
+        const allEntries = await TrendingData.find().skip(skip).limit(limit);
+
+        // Get total count of entries
+        const totalEntries = await TrendingData.countDocuments();
+
+        // Send a success response with paginated data
+        return res.status(200).send({ data: allEntries, totalEntries, page, limit });
     } catch (error) {
-        // Send an error response if retrieval fails
         return res.status(500).send({ message: "Error retrieving movies and TV shows", error: error.message });
     }
 };
+
 
 // Export the functions for use in other parts of the application
 module.exports = { AddTrendingMoviesAndTv, deleteData, getTrendingData };

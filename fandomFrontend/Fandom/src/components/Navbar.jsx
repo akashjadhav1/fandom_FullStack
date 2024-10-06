@@ -13,13 +13,15 @@ import {
 } from "./ui/dropdown-menu";
 import useFavorites from "@/hooks/useFavorites";
 
+
 export default function Navbar() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [isUserLoading, setIsUserLoading] = useState(false);
+  const [isUserLoading, setIsUserLoading] = useState(false); 
   const navigate = useNavigate();
-  const { favorites } = useFavorites();
+  const {favorites} = useFavorites();
+  
 
   const toastConfig = {
     position: "top-right",
@@ -37,7 +39,7 @@ export default function Navbar() {
     try {
       const token = Cookies.get("authToken");
       if (token) {
-        const userData = JSON.parse(atob(token.split(".")[1]));
+        const userData = JSON.parse(atob(token.split('.')[1]));
         setUser(userData);
       }
     } catch (error) {
@@ -64,6 +66,8 @@ export default function Navbar() {
       toast.error("Error signing out", toastConfig);
     }
   };
+
+ 
 
   return (
     <nav className="fixed inset-x-0 top-0 z-50 bg-gray-900 shadow-sm text-white dark:bg-gray-950/90">
@@ -97,9 +101,7 @@ export default function Navbar() {
                       />
                     ) : (
                       <div className="flex justify-center items-center border-4 border-yellow-500 bg-white text-black w-10 h-10 rounded-full">
-                        <p className="font-bold text-lg text-gray-500">
-                          {user.email.substring(0, 2).toUpperCase()}
-                        </p>
+                        <p className="font-bold text-lg text-gray-500" >{user.email.substring(0,2).toUpperCase()}</p>
                       </div>
                     )}
                   </button>
@@ -107,7 +109,7 @@ export default function Navbar() {
                 {menuOpen && (
                   <DropdownMenuContent className="absolute top-0 right-[-10px] w-[250px] h-auto bg-gray-800 border-none shadow-blue-400 shadow-md rounded">
                     {isUserLoading ? (
-                      <p className="text-center p-4">Loading...</p>
+                      <p className="text-center p-4">Loading...</p> 
                     ) : (
                       <>
                         <DropdownMenuItem>
@@ -127,6 +129,7 @@ export default function Navbar() {
                         <hr className="mt-2" />
                         <Link to="/favourites">
                           <DropdownMenuItem className="flex justify-between hover:bg-gray-700">
+                            
                             <Button
                               size="sm"
                               className="block"
@@ -134,18 +137,24 @@ export default function Navbar() {
                             >
                               Favorites
                             </Button>
-
-                            <p className="text-gray-300">{favorites.length}</p>
+                           
+                              <p className="text-gray-300">
+                                {favorites.length}
+                              </p>
+                       
+                            
                           </DropdownMenuItem>
                         </Link>
-                        <DropdownMenuItem
-                          onClick={() => {
-                            handleSignOut();
-                            setMenuOpen(false);
-                          }}
-                          className="hover:bg-gray-700"
-                        >
-                          <Button size="sm">Sign out</Button>
+                        <DropdownMenuItem  onClick={() => {
+                              handleSignOut();
+                              setMenuOpen(false);
+                            }} className="hover:bg-gray-700">
+                          <Button
+                            size="sm"
+                           
+                          >
+                            Sign out
+                          </Button>
                         </DropdownMenuItem>
                       </>
                     )}

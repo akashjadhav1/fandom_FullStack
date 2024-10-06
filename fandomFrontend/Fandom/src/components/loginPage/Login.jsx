@@ -46,7 +46,7 @@ const LoginForm = () => {
       }
     } catch (error) {
       setError(error.message); // Set error state
-      toast.error(error.message, toastConfig); // Show error toast
+      toast.error("Invalid username or password", toastConfig); // Show error toast
     } finally {
       setLoading(false); // Set loading to false after request completes
     }

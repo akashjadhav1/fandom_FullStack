@@ -10,7 +10,7 @@ const allDataRouter = require('./src/routes/allMedia.routes');
 const { swaggerUi, swaggerSpec } = require('./src/swagger'); // Import Swagger configuration
 
 dotenv.config(); 
-const PORT = process.env.PORT; // Default to 5000 if PORT is not set
+const PORT = process.env.PORT; 
 
 const app = express();
 

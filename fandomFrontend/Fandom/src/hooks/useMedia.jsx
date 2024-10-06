@@ -14,7 +14,7 @@ function useMedia(id) {
     async function fetchMediaData() {
       try {
         setLoading(true);
-        const response = await axios.get(apiURL, { timeout: 10000 });
+        const response = await axios.get(apiURL);
         if (isMounted) {
           
           
